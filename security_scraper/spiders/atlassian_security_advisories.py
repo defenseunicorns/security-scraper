@@ -90,19 +90,23 @@ class AtlassianSecurityAdvisoriesSpider(Spider):
 
         if cves := raw.get("cves", None):
             item["cves"] = (
-                re.findall(
-                    utils.CVE_REGEX,
-                    # raw['cves'] might be an array or a string
-                    cves if isinstance(cves, str) else " ".join(cves),
+                sorted(
+                    re.findall(
+                        utils.CVE_REGEX,
+                        # raw['cves'] might be an array or a string
+                        cves if isinstance(cves, str) else " ".join(cves),
+                    )
                 )
                 or None
             )
         else:
             item["cves"] = (
-                list(
-                    set(
-                        cve.upper()
-                        for cve in response.css(".wiki-content").re(utils.CVE_REGEX)
+                sorted(
+                    list(
+                        set(
+                            cve.upper()
+                            for cve in response.css(".wiki-content").re(utils.CVE_REGEX)
+                        )
                     )
                 )
                 or None

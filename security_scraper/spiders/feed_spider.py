@@ -73,11 +73,13 @@ class FeedSpiderBase(Spider):
                 description = None
 
             cves = (
-                list(
-                    set(
-                        cve.upper()
-                        for cve in re.findall(
-                            utils.CVE_REGEX, " ".join(cve_search_locations)
+                sorted(
+                    list(
+                        set(
+                            cve.upper()
+                            for cve in re.findall(
+                                utils.CVE_REGEX, " ".join(cve_search_locations)
+                            )
                         )
                     )
                 )

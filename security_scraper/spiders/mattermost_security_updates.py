@@ -14,7 +14,13 @@ class MattermostSecurityUpdatesSpider(scrapy.Spider):
         # Calculate an "advisory number" based on an index counted from the bottom of the table
         for i, row in enumerate(reversed(table[0].css("tbody tr"))):
             cves = (
-                list(set(cve.upper() for cve in response.selector.re(utils.CVE_REGEX)))
+                sorted(
+                    list(
+                        set(
+                            cve.upper() for cve in response.selector.re(utils.CVE_REGEX)
+                        )
+                    )
+                )
                 or None
             )
             # Convert table rows to dictionaries keyed by slugified table headers
