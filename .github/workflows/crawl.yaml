@@ -1,0 +1,47 @@
+name: cron scrapy crawl
+run-name: crawl
+on:
+  schedule:
+    - cron: '1 0 * * *'
+  workflow_dispatch: {}
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out security-scraper
+        uses: actions/checkout@v3
+      - name: Check out security-scraper-output
+        uses: actions/checkout@v3
+        with:
+          repository: defenseunicorns/security-scraper-output
+          path: output
+      - name: install
+        run: |
+          pip3 install wheel
+          pip3 install .
+      - name: scrapy crawl atlassian_security_advisories
+        continue-on-error: true
+        run: |
+          scrapy crawl atlassian_security_advisories -s OUTPUT_DIRECTORY=output
+      - name: scrapy crawl feeds
+        continue-on-error: true
+        run: |
+          scrapy crawl feeds -s OUTPUT_DIRECTORY=output
+      - name: scrapy crawl github_security_advisories
+        continue-on-error: true
+        run: |
+          scrapy crawl github_security_advisories -s OUTPUT_DIRECTORY=output
+      - name: scrapy crawl mattermost_security_updates
+        continue-on-error: true
+        run: |
+          scrapy crawl mattermost_security_updates -s OUTPUT_DIRECTORY=output
+      - name: push
+        run: |
+          cd output
+          git_status=$(git status --porcelain)
+          if [ -z "$git_status" ]; then
+            exit
+          fi
+          git add .
+          git commit -m "automated crawl"
+          git push

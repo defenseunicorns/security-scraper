@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "security-scraper"
+version = "0.1.0"
+description = ""
+authors = ["Blake Burkhart <bburky@bburky.com>"]
+readme = "README.md"
+packages = [{include = "security_scraper"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+scrapy = "^2.9.0"
+html2text = "^2020.1.16"
+lxml = "^4.9.2"
+ruamel-yaml = "^0.17.31"
+feedparser = "^6.0.10"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.13.2"
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
