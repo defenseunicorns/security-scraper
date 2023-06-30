@@ -5,13 +5,22 @@ on:
     - cron: '1 0 * * *'
   workflow_dispatch: {}
 jobs:
-  Explore-GitHub-Actions:
+  crawl:
     runs-on: ubuntu-latest
     steps:
+      - name: ssh setup
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          # A GitHub deploy key with push permissions is used to write to the security-scraper-output repo
+          ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+          ssh-add - <<< "${{ secrets.SECURITY_SCRAPER_OUTPUT_DEPLOY_KEY }}"
       - name: Check out security-scraper
         uses: actions/checkout@v3
       - name: Check out security-scraper-output
         uses: actions/checkout@v3
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         with:
           repository: defenseunicorns/security-scraper-output
           path: output
@@ -36,7 +45,13 @@ jobs:
         run: |
           scrapy crawl mattermost_security_updates -s OUTPUT_DIRECTORY=output
       - name: push
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
+          # A GitHub deploy key with push permissions is used to write to the security-scraper-output repo
+          ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+          ssh-add - <<< "${{ secrets.SECURITY_SCRAPER_OUTPUT_DEPLOY_KEY }}"
+
           cd output
           git_status=$(git status --porcelain)
           if [ -z "$git_status" ]; then
