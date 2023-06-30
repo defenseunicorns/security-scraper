@@ -47,6 +47,11 @@ jobs:
           ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
           ssh-add - <<< "${{ secrets.SECURITY_SCRAPER_OUTPUT_DEPLOY_KEY }}"
 
+          # TODO: consider using GitHub GraphQL API for committing to repo
+
+          git config --global user.email "github-actions@example.invalid"
+          git config --global user.name "GitHub Actions"
+
           cd output
           git_status=$(git status --porcelain)
           if [ -z "$git_status" ]; then
